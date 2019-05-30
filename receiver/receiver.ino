@@ -16,7 +16,8 @@ This code receive 1 channels and prints the value on the serial monitor
 #include <SPI.h>
 #include <nRF24L01.h>
 #include <RF24.h>
-#define ENABLE2_PWM_PIN 3 // 1,5V do zasilanie sterujacego silnika
+
+#define ENABLE12_PWM_PIN 3 // 1,5V do zasilanie sterujacego silnika
 #define IN1_PIN 4 // 1 silnik (naped)
 #define IN2_PIN 5 // 1 silnik (naped)
 #define IN3_PIN 6 // 2 silnik (sterowanie)
@@ -59,8 +60,8 @@ void setup()
   pinMode(IN2_PIN, OUTPUT);   // wyjścia silnika napędowego
   pinMode(IN3_PIN, OUTPUT);   // wyjścia silnika skręcającego
   pinMode(IN4_PIN, OUTPUT);   // wyjścia silnika skręcającego
-  pinMode(ENABLE2_PWM_PIN, OUTPUT);
-  analogWrite (ENABLE2_PWM_PIN, 77); /* 77 to mniej wiecej 1,5V (sprawdź inne wartości, od 0 do 255)
+  pinMode(ENABLE12_PWM_PIN, OUTPUT);
+  analogWrite (ENABLE12_PWM_PIN, 50); /* 77 to mniej wiecej 1,5V (sprawdź inne wartości, od 0 do 255)
                                         zmienna odpowiadająca za szybkość skręcania                      */
 }
 
@@ -88,29 +89,36 @@ void loop()
   ch2_value = received_data.ch2;
   if(ch2_value == 5){
     Serial.println("jazda do przodu");
-    digitalWrite(IN1_PIN, HIGH);
-    digitalWrite(IN2_PIN, LOW);
+    digitalWrite(IN4_PIN, LOW);
+    digitalWrite(IN3_PIN, HIGH);
   }
   else if(ch2_value == 10){
     Serial.println("jazda do tyłu");
-    digitalWrite(IN1_PIN, LOW);
-    digitalWrite(IN2_PIN, HIGH);
+    digitalWrite(IN3_PIN, LOW);
+    digitalWrite(IN4_PIN, HIGH);
   }
   else{
     Serial.println("silnik wyłączony");
+    digitalWrite(IN3_PIN, LOW);
+    digitalWrite(IN4_PIN, LOW);
   }
   
   Serial.println(ch1_value);
   
   if(ch1_value < 120){
     Serial.println("skręca w lewo");
-    digitalWrite(IN3_PIN, HIGH);
-    digitalWrite(IN4_PIN, LOW);
+    digitalWrite(IN2_PIN, LOW);
+    digitalWrite(IN1_PIN, HIGH);
   }
   else if(ch1_value > 134){
     Serial.println("skręca w prawo");
-    digitalWrite(IN3_PIN, LOW);
-    digitalWrite(IN4_PIN, HIGH);
+    digitalWrite(IN1_PIN, LOW);
+    digitalWrite(IN2_PIN, HIGH);
+  }
+  else{
+    Serial.println("nie skręca");
+    digitalWrite(IN1_PIN, LOW);
+    digitalWrite(IN2_PIN, LOW);
   }
   // delay(500); // używaj delay przy obserwacji działania na serial monitorze
 }
